@@ -1,0 +1,77 @@
+﻿@page "/enlist-in-army"
+@using System.ComponentModel.DataAnnotations
+@using System.Text.RegularExpressions
+
+@rendermode InteractiveWebAssembly
+
+<h3>EnlistInArmyForm</h3>
+
+<EditForm EditContext="editContext" OnValidSubmit="Submit">
+    <div>
+    </div>
+    <ValidationSummary />
+</EditForm>
+
+@code {
+    private EditContext? editContext;
+    public FormModel model = new();
+    public class FormModel : IValidatableObject
+    {
+        [Required]
+        public Guid Guid { get; set; } = Guid.NewGuid();
+        [Required]
+        public string Email { get; set; }
+        [Required]
+        public string Password { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            var validationResults = new List<ValidationResult>();
+
+            if (string.IsNullOrWhiteSpace(Guid.ToString()))
+            {
+                validationResults.Add(new ValidationResult("guid not created."));
+            }
+
+            if (string.IsNullOrWhiteSpace(Email))
+            {
+                validationResults.Add(new ValidationResult("email cannot be empty"));
+            }
+
+            if (string.IsNullOrWhiteSpace(Password))
+            {
+                validationResults.Add(new ValidationResult("password cannot be empty"));
+                return validationResults;
+            }
+
+            var passwordSpecifics = new List<string>();
+
+            if (Password.Length >= 6)
+                passwordSpecifics.Add("6 characters");
+
+            if (!Regex.IsMatch(Password, "[A-Z]"))
+                passwordSpecifics.Add("one uppercase letter");
+
+            if (!Regex.IsMatch(Password, "[0-9]"))
+                passwordSpecifics.Add("one number");
+
+            if (passwordSpecifics.Count > 0)
+            {
+                string message = "password needs atleast " + string.Join(", ", passwordSpecifics);
+                validationResults.Add(new ValidationResult(message, new[] { nameof(Password) }));
+            }
+
+            return validationResults;
+        }
+    }
+
+    private void Submit()
+    {
+
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+}
