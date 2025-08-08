@@ -1,19 +1,31 @@
-﻿@page "/enlist-in-army"
+﻿@page "/enlist"
 @using System.ComponentModel.DataAnnotations
 @using System.Text.RegularExpressions
 
-@rendermode InteractiveWebAssembly
-
 <h3>EnlistInArmyForm</h3>
 
-<EditForm EditContext="editContext" OnValidSubmit="Submit">
-    <div>
-    </div>
+<EditForm Model="@model" EditContext="editContext" OnValidSubmit="Submit">
+    <DataAnnotationsValidator />
     <ValidationSummary />
+
+    <div>
+        <label>Email:</label>
+        <InputText @bind-Value="model.Email" class="form-control" />
+        <ValidationMessage For="@(() => model.Email)" />
+    </div>
+
+    <div>
+        <label>Password:</label>
+        <InputText @bind-Value="model.Password" type="password" class="form-control" />
+        <ValidationMessage For="@(() => model.Password)" />
+    </div>
+
+    <button type="submit">Login</button>
 </EditForm>
 
 @code {
-    private EditContext? editContext;
+    [Parameter]
+    public EditContext? editContext { get; set; }
     public FormModel model = new();
     public class FormModel : IValidatableObject
     {
@@ -67,7 +79,7 @@
 
     private void Submit()
     {
-
+        Console.WriteLine("Submitting form data...");
     }
 
     protected override void OnInitialized()
